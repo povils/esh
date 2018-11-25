@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'commander'
+require 'tty-spinner'
+require_relative '../lib/repository/aws_target_repository.rb'
+require_relative '../lib/ssh/executer.rb'
+require_relative '../lib/input/argument.rb'
+require_relative '../lib/esh.rb'
+
+class Application
+  include Commander::Methods
+
+  def run
+    program :name, 'esh'
+    program :version, '0.0.1'
+    program :description, 'SSH for AWS EC2'
+    default_command :run
+
+    command :run do |c|
+      c.syntax = 'esh ec2-server-name'
+      c.description = 'Default command for SSH'
+      c.action do |args, options|
+        repository = AWSTargetRepository.new
+        argument = Argument.new args.first
+
+        repository.fetch_all.each do |target|
+          if target.name == argument.hostname
+            Executer.execute argument.user, target.ip
+          end
+        end
+      end
+    end
+
+    command :ls do |c|
+      c.syntax = 'esh ls'
+      c.description = 'list all destinations'
+      c.action do |args, options|
+        spinner = TTY::Spinner.new("[:spinner] Fetching ...", format: :pulse_2, clear: true)
+        spinner.auto_spin
+        esh = Esh.new
+        if args.first
+          search = args.first
+        else
+          search = ''
+        end
+
+        table = esh.list(search)
+        spinner.stop
+        puts table
+      end
+    end
+
+    run!
+  end
+end
+
+Application.new.run if $0 == __FILE__
