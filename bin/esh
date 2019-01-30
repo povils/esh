@@ -2,11 +2,14 @@
 
 require 'rubygems'
 require 'commander'
+require 'structural'
 require 'tty-spinner'
 require_relative '../lib/repository/aws_target_repository.rb'
 require_relative '../lib/ssh/executer.rb'
 require_relative '../lib/input/argument.rb'
 require_relative '../lib/esh.rb'
+require_relative '../lib/command/all.rb'
+require_relative '../lib/services/all.rb'
 
 class Application
   include Commander::Methods
@@ -21,14 +24,10 @@ class Application
       c.syntax = 'esh ec2-server-name'
       c.description = 'Default command for SSH'
       c.action do |args, options|
-        repository = AWSTargetRepository.new
-        argument = Argument.new args.first
+        argument = Argument.new(args.first)
 
-        repository.fetch_all.each do |target|
-          if target.name == argument.hostname
-            Executer.execute argument.user, target.ip
-          end
-        end
+        p TargetService.new(argument).target
+
       end
     end
 
@@ -48,6 +47,29 @@ class Application
         table = esh.list(search)
         spinner.stop
         puts table
+      end
+    end
+
+    command :configure do |c|
+      c.syntax = 'esh configure'
+      c.option "--profile NAME", String, 'Profile name'
+      c.description = 'configure'
+      c.action do |args, options|
+        options.default  :profile => 'default'
+
+        $stdout.print "region: "
+        region = $stdin.gets.chomp
+        $stdout.print "user: "
+        user = $stdin.gets.chomp
+
+        Command::Configure.new(options.profile, user, region).execute
+      end
+    end
+
+    command :use do |c|
+      c.syntax = "esh use profile_name"
+      c.action do |args, options|
+        Command::Use.new(args.first).execute
       end
     end
 

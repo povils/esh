@@ -1,6 +1,11 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (5.2.2)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
     aws-eventstream (1.0.1)
     aws-partitions (1.107.0)
     aws-sdk-core (3.36.0)
@@ -14,13 +19,25 @@ GEM
     aws-sigv4 (1.0.3)
     commander (4.4.7)
       highline (~> 2.0.0)
+    concurrent-ruby (1.1.4)
     highline (2.0.0)
+    i18n (1.5.2)
+      concurrent-ruby (~> 1.0)
     jmespath (1.4.0)
+    minitest (5.11.3)
+    money (6.13.2)
+      i18n (>= 0.6.4, <= 2)
+    structural (0.2.0)
+      activesupport
+      money
     terminal-table (1.8.0)
       unicode-display_width (~> 1.1, >= 1.1.1)
+    thread_safe (0.3.6)
     tty-cursor (0.6.0)
     tty-spinner (0.8.0)
       tty-cursor (>= 0.5.0)
+    tzinfo (1.2.5)
+      thread_safe (~> 0.1)
     unicode-display_width (1.4.0)
 
 PLATFORMS
@@ -29,8 +46,9 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk-ec2 (~> 1)
   commander
+  structural
   terminal-table
   tty-spinner
 
 BUNDLED WITH
-   1.17.1
+   1.17.2
