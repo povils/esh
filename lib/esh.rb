@@ -1,5 +1,6 @@
 require_relative 'repository/aws_target_repository.rb'
 require 'terminal-table'
+require 'structural'
 
 class Esh
   def list(destination)

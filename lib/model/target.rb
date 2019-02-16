@@ -1,29 +1,13 @@
 class Target
-  def initialize(data)
-    @data = data
-  end
+  include Structural::Model
 
-  def name
-    @data[:name] || ''
-  end
-
-
-  def id
-    @data[:id]
-  end
-
-  def public_ip
-    @data[:public_ip]
-  end
-
-  def private_ip
-    @data[:private_ip]
-  end
+  field :name, default: ''
+  field :id
+  field :public_ip
+  field :privaate_ip
+  field :az
 
   def ip
     public_ip ? public_ip : private_ip
-  end
-  def az
-    @data[:az]
   end
 end
