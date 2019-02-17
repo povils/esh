@@ -10,6 +10,8 @@ require_relative '../lib/input/argument.rb'
 require_relative '../lib/esh.rb'
 require_relative '../lib/command/all.rb'
 require_relative '../lib/services/all.rb'
+require_relative '../lib/esh.rb'
+require_relative '../lib/command/list.rb'
 
 class Application
   include Commander::Methods
@@ -24,6 +26,7 @@ class Application
       c.syntax = 'esh ec2-server-name'
       c.description = 'Default command for SSH'
       c.action do |args, options|
+
         argument = Argument.new(args.first)
 
         p TargetService.new(argument).target
@@ -34,35 +37,61 @@ class Application
     command :ls do |c|
       c.syntax = 'esh ls'
       c.description = 'list all destinations'
+      c.option '--profile Profile', String, 'Specify profile'
+      c.option '--region Region', String, 'Specify region'
       c.action do |args, options|
+
         spinner = TTY::Spinner.new("[:spinner] Fetching ...", format: :pulse_2, clear: true)
         spinner.auto_spin
-        esh = Esh.new
-        if args.first
-          search = args.first
-        else
-          search = ''
-        end
-
-        table = esh.list(search)
+        table = Command::List.new.execute(args.first.to_s, options.profile, options.region)
         spinner.stop
         puts table
       end
     end
 
     command :configure do |c|
-      c.syntax = 'esh configure'
-      c.option "--profile NAME", String, 'Profile name'
+      c.syntax = "esh configure profile_name"
       c.description = 'configure'
       c.action do |args, options|
-        options.default  :profile => 'default'
+        input_profile = args.first
+        config = Model::Config.new
+        current_profile = config.profile_by_name(input_profile)
+        if current_profile == nil
+          current_region = Model::AwsConfig.new.region(input_profile) || 'None'
+          current_user = 'None'
+        else
+          current_region = current_profile.region_name || 'None'
+          current_user = current_profile.user || 'None'
+        end
 
-        $stdout.print "region: "
+        $stdout.print "Region [#{current_region}]: "
         region = $stdin.gets.chomp
-        $stdout.print "user: "
-        user = $stdin.gets.chomp
+        if region.empty?
+           if current_region == 'None' || current_profile.nil?
+             region = "*"
+           else
+             region = current_profile.region
+           end
+        end
 
-        Command::Configure.new(options.profile, user, region).execute
+        $stdout.print "SSH user [#{current_user}]: "
+        user = $stdin.gets.chomp
+        if user.empty?
+          if current_user == 'None' || current_profile.nil?
+            user = "*"
+          else
+            user = current_profile.user
+          end
+        end
+
+        Command::Configure.new(input_profile, user, region).execute
+      end
+    end
+
+    command :use do |c|
+      c.syntax = "esh use profile_name"
+      c.action do |args, options|
+        Command::Use.new(args.first).execute
       end
     end
 
@@ -75,6 +104,10 @@ class Application
 
     run!
   end
+end
+
+trap "SIGINT" do
+  exit 130
 end
 
 Application.new.run if $0 == __FILE__

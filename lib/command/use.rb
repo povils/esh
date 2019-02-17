@@ -5,7 +5,7 @@ module Command
     end
 
     def execute
-      config.set_current_profile(@profile_name)
+      config.set_current_profile_name(@profile_name)
       config.save
     end
 

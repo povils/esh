@@ -14,7 +14,7 @@ module Model
 
     def current_profile
       profiles.find do |profile|
-        profile.name == current_profile_name
+        profile.name == get_current_profile_name
       end
     end
 
@@ -27,12 +27,39 @@ module Model
       data.merge!({profiles: profiles.map(&:data)})
     end
 
-    def set_current_profile(profile_name)
-      if profile_names.include?(profile_name)
+    def profile_by_name(profile_name)
+      profiles.find { |profile| profile.name == profile_name }
+    end
+
+    def set_current_profile_name(profile_name)
+      if profile_names.include?(profile_name) || profile_name == '*'
         data.merge!({current_profile_name: profile_name})
       else
-        puts "Configure profile, use 'esh configure --profile #{profile_name}'"
+        puts "Configure profile, use 'esh configure #{profile_name}'"
       end
+    end
+
+    def get_current_profile_name
+      if current_profile_name == '*'
+        if Model::AwsConfig.new.profile.nil?
+          raise "Set 'AWS_PROFILE' environment variable or run: 'esh use profile_name'"
+        end
+        return Model::AwsConfig.new.profile
+      end
+
+      current_profile_name
+    end
+
+    def has_current_profile_name?
+      begin
+        if current_profile_name
+          return true
+        end
+      rescue
+        false
+      end
+
+      false
     end
 
     def save

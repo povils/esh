@@ -34,11 +34,11 @@ class TargetService
   end
 
   def aws
-    AWSTargetRepository.new
+    AWSTargetRepository.new(profile)
   end
 
   def profile
-    config.current_profile
+    @current_profile = config.current_profile
   end
 
   def config

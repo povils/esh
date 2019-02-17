@@ -7,21 +7,22 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
     aws-eventstream (1.0.1)
-    aws-partitions (1.107.0)
-    aws-sdk-core (3.36.0)
+    aws-partitions (1.139.0)
+    aws-sdk-core (3.46.1)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-ec2 (1.54.0)
-      aws-sdk-core (~> 3, >= 3.26.0)
+    aws-sdk-ec2 (1.70.0)
+      aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
     aws-sigv4 (1.0.3)
     commander (4.4.7)
       highline (~> 2.0.0)
     concurrent-ruby (1.1.4)
-    highline (2.0.0)
-    i18n (1.5.2)
+    fuzzy_match (2.1.0)
+    highline (2.0.1)
+    i18n (1.5.3)
       concurrent-ruby (~> 1.0)
     jmespath (1.4.0)
     minitest (5.11.3)
@@ -34,21 +35,22 @@ GEM
       unicode-display_width (~> 1.1, >= 1.1.1)
     thread_safe (0.3.6)
     tty-cursor (0.6.0)
-    tty-spinner (0.8.0)
-      tty-cursor (>= 0.5.0)
+    tty-spinner (0.9.0)
+      tty-cursor (~> 0.6.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    unicode-display_width (1.4.0)
+    unicode-display_width (1.4.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-sdk-ec2 (~> 1)
+  aws-sdk-ec2
   commander
+  fuzzy_match
   structural
   terminal-table
   tty-spinner
 
 BUNDLED WITH
-   1.17.2
+   1.17.1

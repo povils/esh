@@ -21,6 +21,10 @@ module Command
         }
       )
 
+      if false == config.has_current_profile_name?
+        config.set_current_profile_name("*")
+      end
+
       config.save
     end
 

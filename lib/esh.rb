@@ -5,9 +5,12 @@ require 'structural'
 class Esh
   def list(destination)
     repository = AWSTargetRepository.new
-    targets = repository.fetch_all
+    targets = repository.fetch_by(destination)
+    if targets.empty?
+      targets = repository.fetch_all
+    end
+
     filtered_targets = targets.select {|t| t.name.include? destination}
-    sleep 5
     rows = []
     filtered_targets.sort_by{|t| t.name}.each do |target|
       rows << [target.name, target.id, target.private_ip, target.public_ip, target.az]
